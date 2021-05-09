@@ -5,14 +5,6 @@ pub struct State {
     pub height: usize,
 }
 
-impl std::ops::Index<usize> for State {
-    type Output = [bool];
-
-    fn index(&self, index: usize) -> &Self::Output {
-        &self.grid[self.width * index..self.width * (index + 1)]
-    }
-}
-
 impl State {
     pub fn from(grid_2d: Vec<Vec<bool>>) -> Self {
         let width = grid_2d[0].len();
@@ -84,20 +76,45 @@ impl State {
     }
 }
 
+impl std::ops::Index<usize> for State {
+    type Output = [bool];
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.grid[self.width * index..self.width * (index + 1)]
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    struct Setup {
+        states: Vec<State>,
+    }
+
+    impl Setup {
+        fn new() -> Self {
+            let grids = vec![vec![
+                vec![false, false, true, true],
+                vec![true, true, false, false],
+                vec![true, true, false, false],
+                vec![false, true, false, true],
+            ]];
+
+            let mut states = vec![];
+            for grid in grids {
+                states.push(State::from(grid));
+            }
+
+            Self { states }
+        }
+    }
+
     #[test]
-    fn check_neighbours_test() {
-        let grid = vec![
-            vec![false, false, true, true],
-            vec![true, true, false, false],
-            vec![true, true, false, false],
-            vec![false, true, false, true],
-        ];
-        let state = State::from(grid);
-        let tests = vec![
+    fn state_check_neighbours_test() {
+        let setup = Setup::new();
+
+        let full_tests = vec![vec![
             ((0, 2), 2),
             ((0, 3), 1),
             ((1, 0), 3),
@@ -106,42 +123,47 @@ mod tests {
             ((2, 1), 4),
             ((3, 1), 2),
             ((3, 3), 0),
-        ];
+        ]];
 
-        for test in tests {
-            let (cell, result) = test;
-            assert_eq!(state.check_neighbours(cell), result);
+        let iter = setup.states.into_iter().zip(full_tests.into_iter());
+        for (state, tests) in iter {
+            for test in tests {
+                let (cell, result) = test;
+                assert_eq!(state.check_neighbours(cell), result);
+            }
         }
     }
 
     #[test]
-    fn next_step_test() {
-        let grid = vec![
-            vec![false, false, true, true],
-            vec![true, true, false, false],
-            vec![true, true, false, false],
-            vec![false, true, false, true],
-        ];
-        let state = State::from(grid);
-        let result_grid: Vec<Vec<bool>> = vec![
+    fn state_next_step_test() {
+        let setup = Setup::new();
+        let result_grids: Vec<Vec<Vec<bool>>> = vec![vec![
             vec![false, true, true, false],
             vec![true, false, false, false],
             vec![false, false, false, false],
             vec![true, true, true, false],
-        ];
-        let result = State::from(result_grid);
+        ]];
+        let mut full_results = Vec::new();
+        for grid in result_grids {
+            full_results.push(State::from(grid));
+        }
 
-        assert_eq!(state.next(), result);
+        let iter = setup.states.into_iter().zip(full_results.into_iter());
+        for (state, result) in iter {
+            assert_eq!(state.next(), result);
+        }
     }
 
     #[test]
     fn state_index_test() {
-        let state = State {
-            grid: vec![true, false, true],
-            width: 1,
-            height: 3,
-        };
+        let setup = Setup::new();
 
-        assert_eq!(state[1][0], false);
+        for state in setup.states {
+            for r in 0..state.height {
+                for c in 0..state.width {
+                    assert_eq!(state[r][c], state.grid[r * state.width + c]);
+                }
+            }
+        }
     }
 }
