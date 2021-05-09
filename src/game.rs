@@ -21,6 +21,23 @@ impl State {
         }
     }
 
+    pub fn random(chance: f64, width: usize, height: usize) -> Self {
+        let mut grid = vec![];
+        for _ in 0..height {
+            let mut row = vec![];
+            for _ in 0..width {
+                let random = rand::random::<f64>();
+                if chance > random {
+                    row.push(true);
+                } else {
+                    row.push(false);
+                }
+            }
+            grid.push(row);
+        }
+        State::from(grid)
+    }
+
     fn check_neighbours(&self, cell: (usize, usize)) -> u8 {
         const ADJACENT: [(i8, i8); 8] = [
             (-1, -1),

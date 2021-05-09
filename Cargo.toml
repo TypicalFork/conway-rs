@@ -8,3 +8,11 @@ edition = "2018"
 [dependencies]
 termion = "*"
 signal-hook = "*"
+rand = "*"
+
+[dev-dependencies]
+criterion = "*"
+
+[[bench]]
+name = "test"
+harness = false
