@@ -1,6 +1,5 @@
 type State = Vec<Vec<bool>>;
 
-#[allow(dead_code)]
 fn check_neighbours(state: &State, cell: (usize, usize)) -> u8 {
     const ADJACENT: [(i8, i8); 8] = [
         (-1, -1),
@@ -41,11 +40,16 @@ pub fn next_step(state: State) -> State {
     let height = state.len();
     let width = state[0].len();
 
-    let result = vec![vec![false; width]; height];
+    let mut result = vec![vec![false; width]; height];
 
-    for r in state.iter() {
-        for c in r.iter() {
-            if *c {};
+    for r in 0..height {
+        for c in 0..width {
+            let num_neighbours = check_neighbours(&state, (r, c));
+            if (!state[r][c] && num_neighbours == 3)
+                || (state[r][c] && ((num_neighbours == 2) | (num_neighbours == 3)))
+            {
+                result[r][c] = true;
+            }
         }
     }
 
@@ -79,5 +83,23 @@ mod tests {
             let (cell, result) = test;
             assert_eq!(check_neighbours(&state, cell), result);
         }
+    }
+
+    #[test]
+    fn next_step_test() {
+        let state = vec![
+            vec![false, false, true, true],
+            vec![true, true, false, false],
+            vec![true, true, false, false],
+            vec![false, true, false, true],
+        ];
+        let result: Vec<Vec<bool>> = vec![
+            vec![false, true, true, false],
+            vec![true, false, false, false],
+            vec![false, false, false, false],
+            vec![true, true, true, false],
+        ];
+
+        assert_eq!(next_step(state), result);
     }
 }
