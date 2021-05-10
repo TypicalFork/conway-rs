@@ -57,9 +57,9 @@ impl State {
                 cell.0 as i64 + adj_cell.0 as i64,
                 cell.1 as i64 + adj_cell.1 as i64,
             );
-            if !(neighbour.1 >= self.height as i64
+            if !(neighbour.1 >= self.width as i64
                 || neighbour.1 < 0
-                || neighbour.0 >= self.width as i64
+                || neighbour.0 >= self.height as i64
                 || neighbour.0 < 0)
                 && self[neighbour.0 as usize][neighbour.1 as usize]
             {
@@ -120,7 +120,6 @@ mod tests {
                     vec![false, true, false, true],
                 ],
                 vec![
-                    vec![true, false, false, false],
                     vec![false, false, true, false],
                     vec![false, false, true, false],
                     vec![false, true, false, false],
@@ -150,7 +149,7 @@ mod tests {
                 ((3, 1), 2),
                 ((3, 3), 0),
             ],
-            vec![((0, 0), 0), ((1, 2), 1), ((2, 2), 2), ((3, 1), 1)],
+            vec![((0, 2), 1), ((1, 2), 2), ((2, 1), 1)],
         ];
 
         let iter = setup.states.into_iter().zip(full_tests.into_iter());
@@ -174,7 +173,6 @@ mod tests {
             ],
             vec![
                 vec![false, false, false, false],
-                vec![false, true, false, false],
                 vec![false, true, true, false],
                 vec![false, false, false, false],
             ],
