@@ -102,6 +102,24 @@ impl std::ops::Index<usize> for State {
     }
 }
 
+impl std::fmt::Display for State {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        const ALIVE: &str = "\u{2588}\u{2588}";
+        const DEAD: &str = "  ";
+        for r in 0..self.height {
+            for c in 0..self.width {
+                if self[r][c] {
+                    write!(f, "{}", ALIVE)?;
+                } else {
+                    write!(f, "{}", DEAD)?;
+                }
+            }
+            writeln!(f)?;
+        }
+        Ok(())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
