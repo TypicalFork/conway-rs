@@ -91,6 +91,24 @@ impl State {
             height: self.height,
         }
     }
+
+    pub fn center(&self, width: usize, height: usize) -> Self {
+        let top_right = ((self.height - height) / 2, (self.width - width) / 2);
+        let bottom_left = (top_right.0 + height, top_right.1 + width);
+        let mut grid = vec![];
+
+        for r in top_right.0..bottom_left.0 {
+            for c in top_right.1..bottom_left.1 {
+                grid.push(self[r][c]);
+            }
+        }
+
+        State {
+            grid,
+            width,
+            height,
+        }
+    }
 }
 
 impl std::ops::Index<usize> for State {
@@ -203,6 +221,24 @@ mod tests {
         let iter = setup.states.into_iter().zip(full_results.into_iter());
         for (state, result) in iter {
             assert_eq!(state.next(), result);
+        }
+    }
+
+    #[test]
+    fn state_center_test() {
+        let setup = Setup::new();
+        let result_grids = vec![
+            vec![vec![true, false], vec![true, false]],
+            vec![vec![false, true], vec![false, true]],
+        ];
+        let mut full_results = Vec::new();
+        for grid in result_grids {
+            full_results.push(State::from(grid));
+        }
+
+        let iter = setup.states.into_iter().zip(full_results.into_iter());
+        for (state, result) in iter {
+            assert_eq!(state.center(2, 2), result);
         }
     }
 
