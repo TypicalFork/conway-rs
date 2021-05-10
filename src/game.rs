@@ -21,11 +21,11 @@ impl State {
         }
     }
 
-    pub fn random(chance: f64, width: usize, height: usize) -> Self {
+    pub fn random(chance: f64, dims: (usize, usize)) -> Self {
         let mut grid = vec![];
-        for _ in 0..height {
+        for _ in 0..dims.1 {
             let mut row = vec![];
-            for _ in 0..width {
+            for _ in 0..dims.0 {
                 let random = rand::random::<f64>();
                 if chance > random {
                     row.push(true);

@@ -7,7 +7,7 @@ fn state_next_bench(c: &mut Criterion) {
     let mut inputs = vec![];
     let mut chance = 0.;
     for _ in 0..10 {
-        inputs.push(State::random(chance, 100, 100));
+        inputs.push(State::random(chance, (100, 100)));
         chance += 0.1;
     }
 
