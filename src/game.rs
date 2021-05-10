@@ -94,6 +94,7 @@ impl State {
 }
 
 impl std::ops::Index<usize> for State {
+    // Returns the row which allows for code like `State[2][0]`.
     type Output = [bool];
 
     fn index(&self, index: usize) -> &Self::Output {
@@ -111,12 +112,20 @@ mod tests {
 
     impl Setup {
         fn new() -> Self {
-            let grids = vec![vec![
-                vec![false, false, true, true],
-                vec![true, true, false, false],
-                vec![true, true, false, false],
-                vec![false, true, false, true],
-            ]];
+            let grids = vec![
+                vec![
+                    vec![false, false, true, true],
+                    vec![true, true, false, false],
+                    vec![true, true, false, false],
+                    vec![false, true, false, true],
+                ],
+                vec![
+                    vec![true, false, false, false],
+                    vec![false, false, true, false],
+                    vec![false, false, true, false],
+                    vec![false, true, false, false],
+                ],
+            ];
 
             let mut states = vec![];
             for grid in grids {
@@ -130,17 +139,19 @@ mod tests {
     #[test]
     fn state_check_neighbours_test() {
         let setup = Setup::new();
-
-        let full_tests = vec![vec![
-            ((0, 2), 2),
-            ((0, 3), 1),
-            ((1, 0), 3),
-            ((1, 1), 4),
-            ((2, 0), 4),
-            ((2, 1), 4),
-            ((3, 1), 2),
-            ((3, 3), 0),
-        ]];
+        let full_tests = vec![
+            vec![
+                ((0, 2), 2),
+                ((0, 3), 1),
+                ((1, 0), 3),
+                ((1, 1), 4),
+                ((2, 0), 4),
+                ((2, 1), 4),
+                ((3, 1), 2),
+                ((3, 3), 0),
+            ],
+            vec![((0, 0), 0), ((1, 2), 1), ((2, 2), 2), ((3, 1), 1)],
+        ];
 
         let iter = setup.states.into_iter().zip(full_tests.into_iter());
         for (state, tests) in iter {
@@ -154,12 +165,20 @@ mod tests {
     #[test]
     fn state_next_step_test() {
         let setup = Setup::new();
-        let result_grids: Vec<Vec<Vec<bool>>> = vec![vec![
-            vec![false, true, true, false],
-            vec![true, false, false, false],
-            vec![false, false, false, false],
-            vec![true, true, true, false],
-        ]];
+        let result_grids: Vec<Vec<Vec<bool>>> = vec![
+            vec![
+                vec![false, true, true, false],
+                vec![true, false, false, false],
+                vec![false, false, false, false],
+                vec![true, true, true, false],
+            ],
+            vec![
+                vec![false, false, false, false],
+                vec![false, true, false, false],
+                vec![false, true, true, false],
+                vec![false, false, false, false],
+            ],
+        ];
         let mut full_results = Vec::new();
         for grid in result_grids {
             full_results.push(State::from(grid));
