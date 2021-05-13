@@ -1,5 +1,10 @@
 #[derive(Clone, Default, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct State {
+    // The grid is stored as a 1D vector, but when it is indexed, it is converted into a 2D
+    // representation using the width and height. I tried storing the data using a HashSet, but it
+    // was VERY slow. This can probably be attributed to the slow (but secure) hashing function
+    // used by Rust, and the large amounts of HashSets and HashMaps used in methods such as
+    // next and get_neighbours.
     pub grid: Vec<bool>,
     pub width: usize,
     pub height: usize,
@@ -92,10 +97,14 @@ impl State {
         }
     }
 
-    pub fn center(&self, width: usize, height: usize) -> Self {
-        let top_right = ((self.height - height) / 2, (self.width - width) / 2);
-        let bottom_left = (top_right.0 + height, top_right.1 + width);
-        let mut grid = vec![];
+    pub fn center(&self, resolution: (usize, usize)) -> Self {
+        // resolution: (width, height)
+        let top_right = (
+            (self.height - resolution.1) / 2,
+            (self.width - resolution.0) / 2,
+        );
+        let bottom_left = (top_right.0 + resolution.1, top_right.1 + resolution.0);
+        let mut grid = Vec::new();
 
         for r in top_right.0..bottom_left.0 {
             for c in top_right.1..bottom_left.1 {
@@ -105,8 +114,8 @@ impl State {
 
         State {
             grid,
-            width,
-            height,
+            width: resolution.0,
+            height: resolution.1,
         }
     }
 }
@@ -238,7 +247,7 @@ mod tests {
 
         let iter = setup.states.into_iter().zip(full_results.into_iter());
         for (state, result) in iter {
-            assert_eq!(state.center(2, 2), result);
+            assert_eq!(state.center((2, 2)), result);
         }
     }
 
